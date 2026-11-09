@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -31,8 +32,10 @@ public class SettingsTabs : MonoBehaviour
     int currentlyShowing = -1;
     Sequence fade;
     Sequence tabsSeq;
+    bool isOpen;
     public void InstantOpenSettings()
     {
+        isOpen = true;
         foreach (var c in UI_List)
         {
             c.alpha = 0;
@@ -53,6 +56,7 @@ public class SettingsTabs : MonoBehaviour
 
     public void OpenSettings()
     {
+        isOpen = true;
         tabsSeq = DOTween.Sequence().SetUpdate(true);
         int t = 0;
         float time = delayBeforeTabs;
@@ -122,6 +126,8 @@ public class SettingsTabs : MonoBehaviour
 
     public void CloseSettings()
     {
+        if (!isOpen) return;
+        isOpen = false;
         tabsSeq.Kill();
         tabsSeq = DOTween.Sequence();
         foreach (var tab in tabs)

@@ -6,6 +6,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEditor.Localization.Plugins.XLIFF.V12;
@@ -115,6 +116,7 @@ public unsafe struct Chunk
     public Coord NextChunkInBetaPath;
     public bool HasBetaConnection;
     public Coord Coordinate;
+    public int ProgressValue;
 
     // connector placement stuff
     public struct DoorSpot
@@ -188,6 +190,13 @@ struct GenerateChunkPathJob : IJob
         chunk.ChunkType = type;
         MapChunks[x + y * MAP_INFO.MAP_SIZE.y] = chunk;
     }
+    void SetChunkProgressValue(int x, int y, int value)
+    {
+        if (x < 0 || x >= MAP_INFO.MAP_SIZE.x || y < 0 || y >= MAP_INFO.MAP_SIZE.y) return;
+        Chunk chunk = MapChunks[x + y * MAP_INFO.MAP_SIZE.y];
+        chunk.ProgressValue = value;
+        MapChunks[x + y * MAP_INFO.MAP_SIZE.y] = chunk;
+    }
     void SetStartingPathChunk(int x, int y, Chunk.Type type, int next_x, int next_y, int next_x2, int next_y2)
     {
         if (x < 0 || x >= MAP_INFO.MAP_SIZE.x || y < 0 || y >= MAP_INFO.MAP_SIZE.y) return;
@@ -246,6 +255,7 @@ struct GenerateChunkPathJob : IJob
         // 2. choose starting cave chunk on left hemisphere
         Coord StartingChunk1 = new(MAP_INFO.CAVE_BIOME_BOUNDS.x, RNG.NextInt(MAP_INFO.CAVE_BIOME_BOUNDS.x, MAP_INFO.CAVE_BIOME_BOUNDS.y + 1));
         SetChunk(StartingChunk1.x, StartingChunk1.y, Chunk.Type.Starting);
+        SetChunkProgressValue(StartingChunk1.x, StartingChunk1.y, 1);
 
         // 3. choose boss chunk
         // fuck it im manually coding each spot assuming the world is 6x6
@@ -267,6 +277,10 @@ struct GenerateChunkPathJob : IJob
             if (i == 0) next_cord = BossChunk1;
             else next_cord = AlphaPath[i - 1];
             SetPathChunk(coord.x, coord.y, Chunk.Type.AlphaPath, next_cord.x, next_cord.y);
+            // if chunk is in center, make difficulty 1, else make 2 unless its last chunk
+            int difficulty = (coord.x == 2 || coord.x == 3 ) && (coord.y == 2 || coord.y == 3) ? 1 :
+                i == 0 ? 3 : 2;
+            SetChunkProgressValue(coord.x, coord.y, difficulty);
         }
 
         // 5. A* beta path from starting cave to boss
@@ -278,6 +292,9 @@ struct GenerateChunkPathJob : IJob
             if (i == 0) next_cord = BossChunk1;
             else next_cord = BetaPath[i - 1];
             SetPathChunk(coord.x, coord.y, Chunk.Type.BetaPath, next_cord.x, next_cord.y);
+            int difficulty = (coord.x == 2 || coord.x == 3) && (coord.y == 2 || coord.y == 3) ? 1 :
+                i == 0 ? 3 : 2;
+            SetChunkProgressValue(coord.x, coord.y, difficulty);
         }
 
         SetStartingPathChunk(StartingChunk1.x, StartingChunk1.y, Chunk.Type.Starting, 
@@ -301,6 +318,7 @@ struct GenerateChunkPathJob : IJob
         // repeat 2-5 for other side
         Coord StartingChunk2 = new(MAP_INFO.CAVE_BIOME_BOUNDS.y, RNG.NextInt(MAP_INFO.CAVE_BIOME_BOUNDS.x, MAP_INFO.CAVE_BIOME_BOUNDS.y + 1));
         SetChunk(StartingChunk2.x, StartingChunk2.y, Chunk.Type.Starting);
+        SetChunkProgressValue(StartingChunk2.x, StartingChunk2.y, 1);
 
         UnsafeList<Coord> PotentialBossSpots2 = new(0, Allocator.Persistent)
         {
@@ -320,6 +338,9 @@ struct GenerateChunkPathJob : IJob
             if (i == 0) next_cord = BossChunk2;
             else next_cord = AlphaPath[i - 1];
             SetPathChunk(coord.x, coord.y, Chunk.Type.AlphaPath, next_cord.x, next_cord.y);
+            int difficulty = (coord.x == 2 || coord.x == 3) && (coord.y == 2 || coord.y == 3) ? 1 :
+                i == 0 ? 3 : 2;
+            SetChunkProgressValue(coord.x, coord.y, difficulty);
         }
 
         BetaPath = FindAStarPath(StartingChunk2, BossChunk2);
@@ -330,6 +351,9 @@ struct GenerateChunkPathJob : IJob
             if (i == 0) next_cord = BossChunk2;
             else next_cord = BetaPath[i - 1];
             SetPathChunk(coord.x, coord.y, Chunk.Type.BetaPath, next_cord.x, next_cord.y);
+            int difficulty = (coord.x == 2 || coord.x == 3) && (coord.y == 2 || coord.y == 3) ? 1 :
+                i == 0 ? 3 : 2;
+            SetChunkProgressValue(coord.x, coord.y, difficulty);
         }
 
         SetStartingPathChunk(StartingChunk2.x, StartingChunk2.y, Chunk.Type.Starting,
@@ -693,21 +717,43 @@ struct PlaceInitialRoomsJob : IJob
         //}
     }
 
-    void InitBetaPath()
-    {
-        //for (int i = 0; i < 4; i++)
-        //{
-        //    currChunk.FreeRectangles.Add(new()
-        //    {
-        //        Coord = new(i % 2 * MAP_INFO.CHUNK_SIZE.x / 2, Mathf.FloorToInt(i / 2) * MAP_INFO.CHUNK_SIZE.x / 2),
-        //        Size = new(MAP_INFO.CHUNK_SIZE.x / 2, MAP_INFO.CHUNK_SIZE.y / 2),
-        //        Recursions = 2
-        //    });
-        //}
-    }
-
     void PlaceIntermediateRooms()
     {
+        UnsafeList<FreeRectangle> ShuffleList(UnsafeList<FreeRectangle> list, Random _RNG)
+        {
+            for (int i = list.Length - 1; i > 0; i--)
+            {
+                int j = _RNG.NextInt(0, i + 1);
+                FreeRectangle temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
+            }
+            return list;
+        }
+
+        UnsafeList<int> GetDifficultyList(int difficulty)
+        {
+            if (difficulty == 3) return new(0, Allocator.Temp) { 3, 3, 3, 2, 2, 2, 1 };
+            else if (difficulty == 2) return new(0, Allocator.Temp) { 2, 2, 2, 2, 1 };
+            else return new(0, Allocator.Temp) { 1 };
+        }
+
+        GenerationInfo GetRoom(UnsafeList<int> diffList, RoomDatabase db, Biome biome, Coord rectSize)
+        {
+            for (int i = 0; i < diffList.Length; i++)
+            {
+                if (diffList[i] == -1) continue;
+                GenerationInfo intermediate = db.GetRoom(RoomType.INTERMEDIATE, biome, rectSize, diffList[i]);
+                if (intermediate.UUID != -1)
+                {
+                    diffList[i] = -1;
+                    return intermediate;
+                }
+            }
+            return db.GetRoom(RoomType.INTERMEDIATE, biome, rectSize, 1);
+        }
+
+        UnsafeList<int> DifficultyList = GetDifficultyList(currChunk.ProgressValue);
         bool MoreRecursions;
         do
         {
@@ -715,13 +761,14 @@ struct PlaceInitialRoomsJob : IJob
             UnsafeList<FreeRectangle> OldRectangles = new(0, Allocator.Persistent);
             foreach (var rect in currChunk.FreeRectangles) OldRectangles.Add(rect);
             currChunk.FreeRectangles.Clear();
+            OldRectangles = ShuffleList(OldRectangles, RNG);
             for (int i = 0; i < OldRectangles.Length; i++)
             {
                 FreeRectangle rect = OldRectangles[i];
                 //Debug.Log($"{i} in {currChunk.Coordinate.x}, {currChunk.Coordinate.y} inspecting {rect}, recurs={rect.Recursions}");
                 if (rect.Recursions > 0)
                 {
-                    var intermediate = RoomDatabase.GetRoom(RoomType.INTERMEDIATE, currChunk.Biome, rect.Size);
+                    var intermediate = GetRoom(DifficultyList, RoomDatabase, currChunk.Biome, rect.Size);
                     if (intermediate.UUID == -1) // none small enough that fit
                     {
                         rect.Recursions = 0;
@@ -755,6 +802,7 @@ struct PlaceInitialRoomsJob : IJob
             }
         }
         while (MoreRecursions);
+        DifficultyList.Dispose();
     }
 
     void PlaceBossRoom()

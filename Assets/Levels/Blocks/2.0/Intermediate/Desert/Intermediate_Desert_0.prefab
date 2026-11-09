@@ -15127,6 +15127,7 @@ MonoBehaviour:
     ConnectorType: 0
     GridDimensions: {x: 4, y: 3}
     GridPadding: 1
+    Difficulty: 1
   Doors:
   - Open: {fileID: 6173534145166665383}
     Closed: {fileID: 1412445653146003650}

@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
 
     public void LoadTutorial(MainMenuSceneTransition trans)
     {
-        SceneToLoad = 6;
+        SceneToLoad = 3;
         StartCoroutine(LoadLoadingScene(trans));
     }
 

@@ -6016,6 +6016,7 @@ MonoBehaviour:
     ConnectorType: 0
     GridDimensions: {x: 3, y: 1}
     GridPadding: 1
+    Difficulty: 1
   Doors:
   - Open: {fileID: 3674237321884526113}
     Closed: {fileID: 8501485806493448676}

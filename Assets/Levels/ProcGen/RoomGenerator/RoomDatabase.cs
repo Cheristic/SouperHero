@@ -67,25 +67,45 @@ public unsafe struct RoomDatabase
         }
     }
 
-    public readonly GenerationInfo GetRoom(RoomType room, Biome biome, Coord maxSize = default)
+    public readonly GenerationInfo GetRoom(RoomType room, Biome biome, Coord maxSize = default, int difficultyRequired = 0)
     {
         GenerationInfo Select(NativeList<GenerationInfo> rooms)
         {
             if (maxSize.x > 0 && maxSize.y > 0)
             {
-                for (int i = 0; i < rooms.Length; i++)
+                NativeList<GenerationInfo> viableRooms = new(0, Allocator.Temp);
+                if (difficultyRequired == 0) // no difficulty requirement
                 {
-                    var room = rooms[rng.NextInt(0, rooms.Length)];
-                    if (room.TotalGridSpace.x <= maxSize.x && room.TotalGridSpace.y <= maxSize.y)
-                        return room;
+                    for (int i = 0; i < rooms.Length; i++)
+                    {
+                        var room = rooms[i];
+                        if (room.TotalGridSpace.x <= maxSize.x && room.TotalGridSpace.y <= maxSize.y) 
+                            viableRooms.Add(room);         
+                    }
                 }
-                // otherwise just loop through list until you find the first one
-                foreach (var room in rooms) 
-                    if (room.TotalGridSpace.x <= maxSize.x && room.TotalGridSpace.y <= maxSize.y) 
-                        return room;
-                return new GenerationInfo().Null();
+                else
+                {
+                    // ex: if dif is 5, go through all 5 difficulties, if none, then try 4, repeat til 0
+                    while (viableRooms.Length == 0 && difficultyRequired > 0)
+                    {
+                        for (int i = 0; i < rooms.Length; i++)
+                        {
+                            var room = rooms[i];
+                            if (room.TotalGridSpace.x <= maxSize.x && room.TotalGridSpace.y <= maxSize.y && room.Difficulty == difficultyRequired)
+                                viableRooms.Add(room);
+                        }
+                        difficultyRequired--;
+                    }
+                }
+                if (viableRooms.Length == 0)
+                {
+                    viableRooms.Dispose();
+                    return new GenerationInfo().Null();
+                }
+                var chosenRoom = viableRooms[rng.NextInt(0, viableRooms.Length)];
+                return chosenRoom;               
             }
-            return rooms[rng.NextInt(0, rooms.Length)];
+            return rooms[rng.NextInt(0, rooms.Length)]; // used just for starting room
         }
 
         switch (room)

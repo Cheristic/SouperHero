@@ -54,6 +54,7 @@ public class MapRoom : MonoBehaviour
         public ConnectorType ConnectorType;
         public Vector2Int GridDimensions; // from bottom left
         public int GridPadding; // total space taken is GridDimensions + GridPadding * 2
+        public int Difficulty;
         internal Vector2Int TotalGridSpace
         {
             get => new(GridDimensions.x + GridPadding * 2, GridDimensions.y + GridPadding * 2);
