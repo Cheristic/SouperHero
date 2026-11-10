@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class VertexJitter : MonoBehaviour
 {

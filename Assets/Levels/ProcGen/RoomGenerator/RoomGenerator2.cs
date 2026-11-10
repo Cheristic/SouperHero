@@ -6,7 +6,6 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using static MapRoom;
 using Random = Unity.Mathematics.Random;
@@ -104,7 +103,7 @@ public class RoomGenerator2 : MonoBehaviour
 
             Transform RoomHolder = new GameObject("RoomHolder").transform;
             chunkSpawner = RoomHolder.AddComponent<ChunkSpawner>();
-            var hubRoom = UUIDtoRoom[RoomDatabase.GetRoom(RoomType.START, Biome.CAVE).UUID].gameObject;
+            var hubRoom = UUIDtoRoom[RoomDatabase.GetRoom(RoomType.START, Biome.CAVE, RNG).UUID].gameObject;
             chunkSpawner.TriggerChunkSpawn(MapChunks, UUIDtoRoom, MAP_INFO, hubRoom);
             yield return StartCoroutine(chunkSpawner.HandleSpawnCheck());
 

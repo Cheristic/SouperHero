@@ -7,10 +7,10 @@ using Unity.Collections.LowLevel.Unsafe;
 
 // inspo from https://medium.com/@basilin/priority-queue-with-c-7089f4898c8d
 [BurstCompatible]
+[StructLayout(LayoutKind.Sequential)]
 public unsafe struct UnsafePriorityQueue
 {
     [BurstCompile]
-    [StructLayout(LayoutKind.Sequential)]
     public struct Entry
     {
         public Coord coord;

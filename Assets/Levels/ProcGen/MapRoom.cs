@@ -6,7 +6,6 @@ using System.ComponentModel;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEditor;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -59,13 +58,13 @@ public class MapRoom : MonoBehaviour
         {
             get => new(GridDimensions.x + GridPadding * 2, GridDimensions.y + GridPadding * 2);
         }
-        public UnsafeList<(Coord coord, Door.Direction dir)> Doors;
+        public UnsafeList<Chunk.DoorSpot> Doors;
 
         public GenerationInfo InitInfo(MapRoom room)
         {
             UUID = room.GetHashCode() + 32; // +32 since we need the first 5 bits for assigning connectors to grid
             Doors = new(0, Allocator.Persistent);
-            foreach (var door in room.Doors) Doors.Add((new(door.Pos), door.dir));
+            foreach (var door in room.Doors) Doors.Add(new(new(door.Pos), door.dir));
             return this;
         }
 

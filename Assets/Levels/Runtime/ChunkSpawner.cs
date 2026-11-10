@@ -5,8 +5,6 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using static MapRoom;
 

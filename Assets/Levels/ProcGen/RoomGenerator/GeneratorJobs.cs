@@ -8,17 +8,11 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using Utils;
 using static MapRoom;
-using static PlaceInitialRoomsJob;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.InputManagerEntry;
 using Random = Unity.Mathematics.Random;
 
-[StructLayout(LayoutKind.Sequential)]
 public struct Coord : IEquatable<Coord>
 {
     public int x;
@@ -124,14 +118,6 @@ public unsafe struct Chunk
         public Coord coord;
         public Door.Direction dir;
         public DoorSpot(Coord coord_, Door.Direction dir_) { coord = coord_ ; dir = dir_; }
-
-        public static implicit operator DoorSpot((Coord coord, Door.Direction dir) value)
-        {
-            DoorSpot ret = new DoorSpot();
-            ret.coord = value.coord;
-            ret.dir = value.dir;
-            return ret;
-        }
     }
     public UnsafeList<DoorSpot> Doors; // for every room in Rooms, its doors will be in the same order in Doors
     public UnsafeList<int> DoorStates; // 1 = on, 0 = taken, -1 = extrema
@@ -564,7 +550,7 @@ struct PlaceInitialRoomsJob : IJob
     void PlaceHub()
     {
         // claim the hub's space
-        var hubGenerationInfo = RoomDatabase.GetRoom(RoomType.START, Biome.CAVE);
+        var hubGenerationInfo = RoomDatabase.GetRoom(RoomType.START, Biome.CAVE, RNG);
         int hubRadius = hubGenerationInfo.TotalGridSpace.x / 2;
 
         bool left = currChunk.Coordinate.x == MAP_INFO.CAVE_BIOME_BOUNDS.x;
@@ -596,7 +582,7 @@ struct PlaceInitialRoomsJob : IJob
                                !left && bottom ? 1 :
                                left && !bottom ? 2 :
                                3;
-        currChunk.HubDoorSpot = hubGenerationInfo.Doors[doorIndex];
+        currChunk.HubDoorSpot = new(hubGenerationInfo.Doors[doorIndex].coord, hubGenerationInfo.Doors[doorIndex].dir);
 
 
 
@@ -680,7 +666,7 @@ struct PlaceInitialRoomsJob : IJob
         sizeX = Mathf.Min(sizeX, bounds.Size.x);
         sizeY = Mathf.Min(sizeY, bounds.Size.y);
 
-        GenerationInfo campfire = RoomDatabase.GetRoom(RoomType.CAMPFIRE, currChunk.Biome, new(sizeX,sizeY));
+        GenerationInfo campfire = RoomDatabase.GetRoom(RoomType.CAMPFIRE, currChunk.Biome, RNG, new(sizeX,sizeY));
 
         int camp_x = RNG.NextInt(startX, startX + sizeX - campfire.TotalGridSpace.x);
         int camp_y = RNG.NextInt(startY, startY + sizeY - campfire.TotalGridSpace.y);
@@ -689,7 +675,7 @@ struct PlaceInitialRoomsJob : IJob
         campfire.RoomSpawn = new(camp_x+campfire.GridPadding, camp_y+campfire.GridPadding);
         currChunk.Rooms.Add(campfire);
 
-        currChunk.CampfireDoorSpot = campfire.Doors[exitDoor];
+        currChunk.CampfireDoorSpot = new(campfire.Doors[exitDoor].coord, campfire.Doors[exitDoor].dir);
         currChunk.CampfireDoorSpot.coord = new Coord(camp_x + campfire.GridPadding + currChunk.CampfireDoorSpot.coord.x, camp_y + campfire.GridPadding + currChunk.CampfireDoorSpot.coord.y);
         currChunk.CampfireDoorID = currChunk.DoorRoomIDTracker;
 
@@ -738,19 +724,19 @@ struct PlaceInitialRoomsJob : IJob
             else return new(0, Allocator.Temp) { 1 };
         }
 
-        GenerationInfo GetRoom(UnsafeList<int> diffList, RoomDatabase db, Biome biome, Coord rectSize)
+        GenerationInfo GetRoom(UnsafeList<int> diffList, RoomDatabase db, Biome biome, Coord rectSize, Random RNG)
         {
             for (int i = 0; i < diffList.Length; i++)
             {
                 if (diffList[i] == -1) continue;
-                GenerationInfo intermediate = db.GetRoom(RoomType.INTERMEDIATE, biome, rectSize, diffList[i]);
+                GenerationInfo intermediate = db.GetRoom(RoomType.INTERMEDIATE, biome, RNG, rectSize, diffList[i]);
                 if (intermediate.UUID != -1)
                 {
                     diffList[i] = -1;
                     return intermediate;
                 }
             }
-            return db.GetRoom(RoomType.INTERMEDIATE, biome, rectSize, 1);
+            return db.GetRoom(RoomType.INTERMEDIATE, biome, RNG, rectSize, 1);
         }
 
         UnsafeList<int> DifficultyList = GetDifficultyList(currChunk.ProgressValue);
@@ -768,7 +754,7 @@ struct PlaceInitialRoomsJob : IJob
                 //Debug.Log($"{i} in {currChunk.Coordinate.x}, {currChunk.Coordinate.y} inspecting {rect}, recurs={rect.Recursions}");
                 if (rect.Recursions > 0)
                 {
-                    var intermediate = GetRoom(DifficultyList, RoomDatabase, currChunk.Biome, rect.Size);
+                    var intermediate = GetRoom(DifficultyList, RoomDatabase, currChunk.Biome, rect.Size, RNG);
                     if (intermediate.UUID == -1) // none small enough that fit
                     {
                         rect.Recursions = 0;
@@ -828,7 +814,7 @@ struct PlaceInitialRoomsJob : IJob
 
         //Debug.Log($"{currChunk.NextChunkInPath} -> {currChunk.Coordinate}");
         //Debug.Log($"({startX1}, {startY1}), ({startX2}, {startY2}), {sizeX}, {sizeY}");
-        GenerationInfo bossRoom = RoomDatabase.GetRoom(RoomType.BOSS, currChunk.Biome, new(bossSizeX, bossSizeY));
+        GenerationInfo bossRoom = RoomDatabase.GetRoom(RoomType.BOSS, currChunk.Biome, RNG, new(bossSizeX, bossSizeY));
 
         int boss_x = RNG.NextInt(bossStartX, bossStartX + bossSizeX - bossRoom.TotalGridSpace.x);
         int boss_y = RNG.NextInt(bossStartY, bossStartY + bossSizeY - bossRoom.TotalGridSpace.y);
@@ -837,7 +823,7 @@ struct PlaceInitialRoomsJob : IJob
         bossRoom.RoomSpawn = new(boss_x + bossRoom.GridPadding, boss_y + bossRoom.GridPadding);
         currChunk.Rooms.Add(bossRoom);
 
-        currChunk.BossDoorSpot = bossRoom.Doors[bossDoor];
+        currChunk.BossDoorSpot = new(bossRoom.Doors[bossDoor].coord, bossRoom.Doors[bossDoor].dir);
         currChunk.BossDoorSpot.coord = new Coord(boss_x + bossRoom.GridPadding + currChunk.BossDoorSpot.coord.x, boss_y + bossRoom.GridPadding + currChunk.BossDoorSpot.coord.y);
 
         for (int i = 0; i < bossRoom.Doors.Length; i++)
@@ -848,7 +834,7 @@ struct PlaceInitialRoomsJob : IJob
         }
         currChunk.DoorRoomIDTracker++;
 
-        GenerationInfo campfire = RoomDatabase.GetRoom(RoomType.CAMPFIRE, currChunk.Biome, new(campSizeX, campSizeY));
+        GenerationInfo campfire = RoomDatabase.GetRoom(RoomType.CAMPFIRE, currChunk.Biome, RNG, new(campSizeX, campSizeY));
 
         int camp_x = RNG.NextInt(campStartX, campStartX + campSizeX - campfire.TotalGridSpace.x);
         int camp_y = RNG.NextInt(campStartY, campStartY + campSizeY - campfire.TotalGridSpace.y);
@@ -959,7 +945,7 @@ struct PlaceConnectorsJob : IJob
                 // is < byte 00011111
                 if (cell < 32 && cell > 1)
                 {
-                    GenerationInfo connector = RoomDatabase.GetConnector(currChunk.Biome, (byte)cell);
+                    GenerationInfo connector = RoomDatabase.GetConnector(currChunk.Biome, (byte)cell, RNG);
                     connector.RoomSpawn = new(i % MAP_INFO.CHUNK_SIZE.x, Mathf.FloorToInt(i / MAP_INFO.CHUNK_SIZE.x));
                     //Debug.Log($"CONNECTOR {currChunk.Coordinate.x}, {currChunk.Coordinate.y} of {connector.ConnectorType}, Place room " + connector.Type + " " + connector.UUID + " at " + connector.RoomSpawn);
                     currChunk.Rooms.Add(connector);

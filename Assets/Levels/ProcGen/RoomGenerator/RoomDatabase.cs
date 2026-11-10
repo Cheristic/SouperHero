@@ -21,12 +21,9 @@ public unsafe struct RoomDatabase
     //[NoAlias][ReadOnly] NativeList<GenerationInfo> FOREST_CONNECTORS;
     //[NoAlias][ReadOnly] NativeList<GenerationInfo> FOREST_CAMPFIRES;
     GenerationInfo CAVE_BOSS;
-    static Random rng;
 
     public void Init(MapRoom[] rooms, uint seed)
     {
-        rng = new Random(seed);
-
         CAVE_INTERMEDIATES = new(0, Allocator.Persistent);
         CAVE_CONNECTORS = new(0, Allocator.Persistent);
         CAVE_CAMPFIRES = new(0, Allocator.Persistent);
@@ -67,9 +64,9 @@ public unsafe struct RoomDatabase
         }
     }
 
-    public readonly GenerationInfo GetRoom(RoomType room, Biome biome, Coord maxSize = default, int difficultyRequired = 0)
+    public readonly GenerationInfo GetRoom(RoomType room, Biome biome, Random RNG, Coord maxSize = default, int difficultyRequired = 0)
     {
-        GenerationInfo Select(NativeList<GenerationInfo> rooms)
+        GenerationInfo Select(NativeList<GenerationInfo> rooms, Random rng)
         {
             if (maxSize.x > 0 && maxSize.y > 0)
             {
@@ -113,13 +110,13 @@ public unsafe struct RoomDatabase
             case RoomType.START:
                 return START_ROOM;
             case RoomType.INTERMEDIATE:
-                if (biome == Biome.CAVE) return Select(CAVE_INTERMEDIATES);
-                else if (biome == Biome.DESERT) return Select(DESERT_INTERMEDIATES);
+                if (biome == Biome.CAVE) return Select(CAVE_INTERMEDIATES, RNG);
+                else if (biome == Biome.DESERT) return Select(DESERT_INTERMEDIATES, RNG);
                 //else if (biome == Biome.FOREST) return Select(CAVE_INTERMEDIATES);
                 break;
             case RoomType.CAMPFIRE:
-                if (biome == Biome.CAVE) return Select(CAVE_CAMPFIRES);
-                else if (biome == Biome.DESERT) return Select(DESERT_CAMPFIRES);
+                if (biome == Biome.CAVE) return Select(CAVE_CAMPFIRES, RNG);
+                else if (biome == Biome.DESERT) return Select(DESERT_CAMPFIRES, RNG);
                 //else if (biome == Biome.FOREST) return Select(CAVE_CAMPFIRES);
                 break;
             case RoomType.BOSS:
@@ -129,7 +126,7 @@ public unsafe struct RoomDatabase
         return START_ROOM;
     }
 
-    public readonly GenerationInfo GetConnector(Biome biome, byte value)
+    public readonly GenerationInfo GetConnector(Biome biome, byte value, Random RNG)
     {
         GenerationInfo Select(NativeList<GenerationInfo> rooms)
         {
@@ -155,7 +152,7 @@ public unsafe struct RoomDatabase
             {
                 if (room.ConnectorType == type) validConnectors.Add(room);
             }
-            if (validConnectors.Length > 0) return validConnectors[rng.NextInt(0, validConnectors.Length)];
+            if (validConnectors.Length > 0) return validConnectors[RNG.NextInt(0, validConnectors.Length)];
             return rooms[0];
         }
 
