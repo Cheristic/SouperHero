@@ -13,11 +13,13 @@ public class EndTutorial : MonoBehaviour
     {
         Door.SetActive(true);
         CookingScreen.CookSoup += OnCook;
+        GameManager.OnEndRun += TriggerEnd;
     }
 
     private void OnDisable()
     {
         CookingScreen.CookSoup -= OnCook;
+        GameManager.OnEndRun -= TriggerEnd;
     }
 
     void OnCook()
@@ -31,8 +33,13 @@ public class EndTutorial : MonoBehaviour
         if (isEnding) return;
         if (collision.gameObject.CompareTag("Player"))
         {
-            StartCoroutine(EndTutorialTransition());
+            TriggerEnd(true);
         }
+    }
+
+    void TriggerEnd(bool n)
+    {
+        StartCoroutine(EndTutorialTransition());
     }
 
     bool isEnding = false;

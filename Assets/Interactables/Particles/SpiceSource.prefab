@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parts: {fileID: 3509400374274385587}
   collectBufferTime: 0.3
-  timeTilIncreaseSpeed: 0.7
+  timeTilIncreaseSpeed: 1
   speedIncrease: 15.67
   transitionToSuckTime: 1
   collectRange: 0.0001
@@ -2654,7 +2654,7 @@ ParticleSystem:
     magnitude:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 24.02
+      scalar: 38.16
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -2712,7 +2712,7 @@ ParticleSystem:
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 12.36
+      scalar: 8.3
       minScalar: 0
       maxCurve:
         serializedVersion: 2

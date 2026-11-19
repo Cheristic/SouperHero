@@ -22,12 +22,13 @@ public class SpiceSource : MonoBehaviour
         transform.localEulerAngles = new Vector3(0, 0, rot);
         parts.Emit(count);
         collisionEvents = new();
-        parts.externalForces.AddInfluence(PlayerEntityManager.Singleton.GetComponentInChildren<ParticleSystemForceField>());
+
         StartCoroutine(Wait());
 
         IEnumerator Wait()
         {
             yield return new WaitForSeconds(collectBufferTime);
+            parts.externalForces.AddInfluence(PlayerEntityManager.Singleton.GetComponentInChildren<ParticleSystemForceField>());
             inBuffer = false;
             yield return new WaitForSeconds(timeTilIncreaseSpeed);
 

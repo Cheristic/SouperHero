@@ -36,6 +36,9 @@ public abstract class EnemyBaseClass : Entity
     public StudioEventEmitter enemyEmitter;
     public BossAI spawnedBy = null;
 
+    [SerializeField] SpiceSource spiceSource;
+    [SerializeField] Vector2Int spiceToDrop;
+
     // Used for boss fights to make the enemy always attack and never idle
     protected bool alwaysAggro = false;
 
@@ -91,6 +94,13 @@ public abstract class EnemyBaseClass : Entity
         if (spawnedBy != null)
         {
             spawnedBy.SpawnedEnemyDeath(this);
+        }
+
+        if (drop && spiceSource != null)
+        {
+            float angle = Mathf.Rad2Deg * Mathf.Atan2(_rigidbody.velocity.y, _rigidbody.velocity.x);
+            SpiceSource source = Instantiate(spiceSource, transform.position, Quaternion.identity);
+            source.Emit(UnityEngine.Random.Range(spiceToDrop.x, spiceToDrop.y), angle);
         }
     }
 

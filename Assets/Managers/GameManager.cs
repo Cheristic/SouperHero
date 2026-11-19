@@ -115,6 +115,7 @@ public class GameManager : MonoBehaviour
     public static event Action<bool> OnEndRun;
     public void EndRun(bool successfulRun)
     {
+        if (!GameRunning) return;
         if (!TutorialRunning) MetricsTracker.Singleton.EndRun(successfulRun);
         Cursor.visible = true;
         
@@ -126,11 +127,6 @@ public class GameManager : MonoBehaviour
         OnEndRun?.Invoke(successfulRun);
         //if (successfulRun) SceneManager.LoadScene(4);
         //else SceneManager.LoadScene(3);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U)) EndRun(false);
     }
 
 }

@@ -23,6 +23,7 @@ public class PlayerInventory : MonoBehaviour
         public List<Vector2> collectableLocations;
         public List<float> collectableRotations;
         public SerializedSoup[] soupsHeld;
+        public int spice;
 
         public InventoryData(PlayerInventory newInventory = null)
         {
@@ -33,6 +34,7 @@ public class PlayerInventory : MonoBehaviour
                 collectableRotations = new();
                 soupsHeld = new SerializedSoup[newInventory.maxSoups];
                 for (int i = 0; i < soupsHeld.Length; i++) soupsHeld[i] = new(0);
+                spice = 0;
             }
         }
     }
@@ -188,7 +190,7 @@ public class PlayerInventory : MonoBehaviour
                 collectablesHeld[i].SpawnInUI(data.collectableLocations[i], data.collectableRotations[i]);
             }
         }
-
+        BasketUI.Singleton.SetSpiceCount(data.spice);
 
 
         SoupInventoryUI.Singleton.InitializeSlots(soupsHeld);

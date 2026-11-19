@@ -129,6 +129,8 @@ MonoBehaviour:
   _playerTransform: {fileID: 0}
   enemyEmitter: {fileID: 0}
   spawnedBy: {fileID: 0}
+  spiceSource: {fileID: 4877344108264060778, guid: 1edef7a398af74a46b83771dcbb6fabf, type: 3}
+  spiceToDrop: {x: 10, y: 17}
   detectionRadius: 9
   followingRadius: 12
   shootingRadius: 6

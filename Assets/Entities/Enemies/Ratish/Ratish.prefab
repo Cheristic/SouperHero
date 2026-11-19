@@ -205,6 +205,9 @@ MonoBehaviour:
     m_Bits: 256
   _playerTransform: {fileID: 0}
   enemyEmitter: {fileID: 0}
+  spawnedBy: {fileID: 0}
+  spiceSource: {fileID: 4877344108264060778, guid: 1edef7a398af74a46b83771dcbb6fabf, type: 3}
+  spiceToDrop: {x: 5, y: 8}
   shootingRadius: 9
   playerLayer:
     serializedVersion: 2
