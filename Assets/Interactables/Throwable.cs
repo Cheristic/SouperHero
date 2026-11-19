@@ -103,12 +103,14 @@ public class Throwable : Interactable
     }
 
     bool hasContacted = false;
+    Vector2 onThrowDir = Vector2.zero;
     public void ThrowItem(Vector2 throwPoint, Vector2 direction)
     {
         _Collider.enabled = true;
         _Collider.isTrigger = true;
         transform.parent = null;
         hasContacted = false;
+        onThrowDir = direction;
 
         Vector2 startPoint = transform.position;
         Vector2 endPoint = new Vector2(direction.x * THROW_DISTANCE + throwPoint.x, direction.y * THROW_DISTANCE + throwPoint.y);
@@ -160,7 +162,7 @@ public class Throwable : Interactable
             }
             else
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable();
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(onThrowDir);
             }
 
             hasContacted = true;
@@ -171,7 +173,7 @@ public class Throwable : Interactable
     public virtual void OnThrowContact()
     {
         TryGetComponent(out Destroyables destroyable);
-        destroyable?.RemoveDestroyable();
+        destroyable?.RemoveDestroyable(onThrowDir);
     }
 
 

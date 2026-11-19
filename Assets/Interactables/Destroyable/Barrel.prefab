@@ -187,6 +187,8 @@ MonoBehaviour:
   spawnCollectableOffsetY: 0.4
   bounceAmount: 0
   groundOffsetY: 0.2
+  spiceSource: {fileID: 4877344108264060778, guid: 1edef7a398af74a46b83771dcbb6fabf, type: 3}
+  spiceToDrop: {x: 3, y: 6}
 --- !u!50 &2217634043715287802
 Rigidbody2D:
   serializedVersion: 4

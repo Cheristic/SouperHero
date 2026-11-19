@@ -203,7 +203,7 @@ public class PlayerEntityManager : Entity
             Destroyables destroyable = collision.gameObject.GetComponent<Destroyables>();
             if (destroyable != null)
             {
-                destroyable.RemoveDestroyable();
+                destroyable.RemoveDestroyable(playerMovement.currentDirection);
             }
         }
     }

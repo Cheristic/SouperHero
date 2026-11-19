@@ -56,7 +56,7 @@ public class StandardEnemyBullet : MonoBehaviour
         {
             if (collider.gameObject.GetComponent<Destroyables>() != null)
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable();
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(direction);
             }
             if(collider.gameObject.GetComponent<Entity>() != null)
             {

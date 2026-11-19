@@ -16,6 +16,8 @@ public class Destroyables : MonoBehaviour
     [SerializeField] float spawnCollectableOffsetY = -1;
     [SerializeField] float bounceAmount = 0;
     [SerializeField] float groundOffsetY = 0;
+    [SerializeField] SpiceSource spiceSource;
+    [SerializeField] Vector2Int spiceToDrop;
 
     int forageableIndex = -1;
     public void TrackSpawn(int index, List<Collectable> newList)
@@ -24,7 +26,7 @@ public class Destroyables : MonoBehaviour
         if (randDrop) multipleCollectables = newList;
     }
 
-    public void RemoveDestroyable()
+    public void RemoveDestroyable(Vector2 hitDir = default)
     {
         if (!DestroyedOnDamage) return;
 
@@ -58,6 +60,15 @@ public class Destroyables : MonoBehaviour
         }
 
         if (forageableIndex >= 0) RunStateManager.Singleton.TrackBrokenDestroyable(forageableIndex);
+
+
+        if (spiceSource != null)
+        {
+            float angle = Mathf.Rad2Deg * Mathf.Atan2(hitDir.y, hitDir.x);
+            SpiceSource source = Instantiate(spiceSource, transform.position, Quaternion.identity);
+            source.Emit(UnityEngine.Random.Range(spiceToDrop.x, spiceToDrop.y), angle);
+        }
+       
 
         destroyedParticles?.Break();
     }

@@ -71,6 +71,7 @@ public class RollingCactus : Entity
 
     bool hasContacted = false, canBreak = false;
     IEnumerator IRoll;
+    Vector3 direction = Vector3.zero;
     private IEnumerator Roll(Transform source, int damage)
     {
         _Collider.isTrigger = true;
@@ -84,7 +85,7 @@ public class RollingCactus : Entity
         inflictionsOnRollContact[KNOCKBACK_INDEX].add = damage/2;
 
         // Calculate the angle between the tree parent and the damage source
-        Vector3 direction = (transform.position - source.position).normalized;
+        direction = (transform.position - source.position).normalized;
         int sign = direction.x < 0 ? 1 : -1;
 
         while (!hasContacted)
@@ -126,7 +127,7 @@ public class RollingCactus : Entity
                 destroyableEntity?.ApplyInfliction(inflictionsOnRollContact, gameObject.transform);
             } else
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable();
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(direction);
             }
 
             hasContacted = true;

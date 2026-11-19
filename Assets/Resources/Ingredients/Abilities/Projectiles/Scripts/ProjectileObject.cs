@@ -20,7 +20,7 @@ public class ProjectileObject : MonoBehaviour
     AbilityStats stats;
     float persistenceTime;
     int bounceCounter = 0;
-
+    Vector2 currDir = Vector2.zero;
     public void Spawn(Vector2 spawnPoint, Vector2 dir, AbilityStats stats, List<Infliction> inflictions, Sprite[] frames, float animFPS)
     {
         this.stats = stats;
@@ -31,6 +31,7 @@ public class ProjectileObject : MonoBehaviour
         transform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
         this.inflictions = inflictions;
         gameObject.SetActive(true);
+        currDir = dir;
         rb.velocity = dir * stats.ModifiedSpeed;
         canHitPlayer = false;
         bounceCounter = 0;
@@ -61,7 +62,7 @@ public class ProjectileObject : MonoBehaviour
         }
         else if (CollisionLayers.Singleton.InDestroyableLayer(collider.gameObject))
         {
-            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable();
+            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(currDir);
             canHitPlayer = false;
             gameObject.SetActive(false);
         } else if (collider.CompareTag("NPC"))
@@ -97,6 +98,7 @@ public class ProjectileObject : MonoBehaviour
         // Reflect the velocity along the normal
         rb.velocity = Vector2.Reflect(rb.velocity, normal);
 
+        currDir = rb.velocity.normalized;
         Vector2 dir = rb.velocity.normalized;
         transform.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
 

@@ -90,6 +90,7 @@ public class PlayerEnvInteraction : MonoBehaviour
     private int lastInteractionFrame = -1;
     private void Interact(InputAction.CallbackContext ctx)
     {
+        if (!GameManager.Singleton.GameRunning || PauseManager.isPaused) return;
         //handle dropping the item;
         if (PlayerInventory.Singleton.playerHolding)
         {

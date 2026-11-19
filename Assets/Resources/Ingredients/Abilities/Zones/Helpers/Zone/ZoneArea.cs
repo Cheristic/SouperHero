@@ -24,7 +24,7 @@ public class ZoneArea : MonoBehaviour
         }
         else if (CollisionLayers.Singleton.InDestroyableLayer(collider.gameObject))
         {
-            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable();
+            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(collider.transform.position - transform.position);
         }
     }
 
