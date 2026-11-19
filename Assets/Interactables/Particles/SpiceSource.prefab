@@ -51,7 +51,7 @@ MonoBehaviour:
   timeTilIncreaseSpeed: 1
   speedIncrease: 15.67
   transitionToSuckTime: 1
-  collectRange: 0.0001
+  collectRange: 0.05
 --- !u!198 &3509400374274385587
 ParticleSystem:
   m_ObjectHideFlags: 0

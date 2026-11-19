@@ -69,32 +69,13 @@ public class SpiceSource : MonoBehaviour
 
     void OnParticleCollision(GameObject other)
     {
-        Debug.Log("collide");
         if (inBuffer || !other.CompareTag("Player")) return;
 
         int numCollisionEvents = parts.GetCollisionEvents(other, collisionEvents);
 
-        ParticleSystem.Particle[] particles = new ParticleSystem.Particle[parts.main.maxParticles];
-        int numParticlesAlive = parts.GetParticles(particles);
-
         for (int i = 0; i < numCollisionEvents; i++)
         {
-            Vector3 collisionPos = collisionEvents[i].intersection;
-
-            // Iterate through alive particles to find the one that collided
-            for (int j = 0; j < numParticlesAlive; j++)
-            {
-                // Check distance to determine if this particle caused the collision
-                if (Vector3.Distance(particles[j].position, collisionPos) < collectRange)
-                {
-                    // Disable the particle by setting remaining lifetime to 0 or negative
-                    particles[j].remainingLifetime = 0f;
-                    break; // Stop checking once the specific particle is found/removed
-                }
-            }
+            BasketUI.Singleton.IncrementSpiceCount();
         }
-
-        // Apply changes back to the particle system
-        parts.SetParticles(particles, numParticlesAlive);
     }
 }

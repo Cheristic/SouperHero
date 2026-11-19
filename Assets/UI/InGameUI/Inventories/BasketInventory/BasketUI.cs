@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using TMPro;
 
 //Lo: This class contains the contents of the player's pot
 public class BasketUI : MonoBehaviour
@@ -13,7 +13,7 @@ public class BasketUI : MonoBehaviour
     [SerializeField] float offsetYSpawn = 85;
     [SerializeField] Vector2 dropForceRangeX= new Vector2(0, 0);
     [SerializeField] Vector2 dropForceRangeY = new Vector2(2, 8);
-    [SerializeField] TMP_Text spiceAmount;
+    [SerializeField] StatTooltip spiceAmount;
 
     List<Collectable> basketCollectables = new List<Collectable>();
     private void Awake()
@@ -70,6 +70,12 @@ public class BasketUI : MonoBehaviour
 
     public void SetSpiceCount(int amount)
     {
-        spiceAmount.text = amount.ToString() + "x";
+        spiceAmount.SetStat(amount, Color.white);
+    }
+
+    public void IncrementSpiceCount()
+    {
+        PlayerInventory.Singleton.data.spice++;
+        spiceAmount.SetStat(PlayerInventory.Singleton.data.spice, Color.white);
     }
 }

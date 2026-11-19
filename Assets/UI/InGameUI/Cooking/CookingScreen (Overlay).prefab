@@ -1062,6 +1062,7 @@ MonoBehaviour:
   UsesStat: {fileID: 3793514106887497212}
   PlaceBowlText: {fileID: 8774432116627266052}
   PlaceBowlKey: Place Bowl Cooking
+  FullBowlColor: {r: 0.95686275, g: 0.7607843, b: 0.33333334, a: 1}
 --- !u!223 &5202860970553250602
 Canvas:
   m_ObjectHideFlags: 0
@@ -3509,7 +3510,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4508435715611030013, guid: 506740bea54e7d542886da3f8e974793, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -19.3
+      value: -24.25
       objectReference: {fileID: 0}
     - target: {fileID: 4922324655893316351, guid: 506740bea54e7d542886da3f8e974793, type: 3}
       propertyPath: m_Pivot.x
@@ -3641,7 +3642,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7076404960118200178, guid: 506740bea54e7d542886da3f8e974793, type: 3}
       propertyPath: TooltipLocalizationKEY
-      value: Cooldown Stat Tooltip
+      value: Uses Stat Tooltip
       objectReference: {fileID: 0}
     - target: {fileID: 7076404960118200178, guid: 506740bea54e7d542886da3f8e974793, type: 3}
       propertyPath: colliderSizeMultiplier

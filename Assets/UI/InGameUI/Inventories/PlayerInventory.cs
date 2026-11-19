@@ -107,8 +107,7 @@ public class PlayerInventory : MonoBehaviour
                     }
                 }
             }
-            FinishedSoup finishedSoup = new(ing, soup);
-            finishedSoup.uses = this.uses;
+            FinishedSoup finishedSoup = new(ing, soup, this.uses);
             return finishedSoup;
         }
     }
@@ -150,7 +149,7 @@ public class PlayerInventory : MonoBehaviour
     void Awake()
     {
         if (Singleton == null) Singleton = this;
-        emptyBowlAttack = new FinishedSoup(emptyBowlIngredients, emptyBowlBase);
+        emptyBowlAttack = new FinishedSoup(emptyBowlIngredients, emptyBowlBase, -1);
 
         Collectable[] flavors = Resources.LoadAll<Collectable>(FlavorCollectablePath);
         if (flavors != null) foreach (var collectable in flavors) RetrieveCollectableByUUID.Add(collectable.ingredient.uuid, collectable);
@@ -170,7 +169,7 @@ public class PlayerInventory : MonoBehaviour
         if (data == null) // empty inventory, give default soup attack and bases
         {
             data = new(this);
-            soupsHeld[0] = new FinishedSoup(defaultSoupIngredients, defaultSoupBase);
+            soupsHeld[0] = new FinishedSoup(defaultSoupIngredients, defaultSoupBase, -1);
             int count = 1;
             foreach (var soup in otherStartingBases)
             {

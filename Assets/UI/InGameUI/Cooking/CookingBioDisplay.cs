@@ -11,6 +11,7 @@ public class CookingBioDisplay : MonoBehaviour
     [SerializeField] StatTooltip UsesStat;
     [SerializeField] TMP_Text PlaceBowlText;
     [SerializeField] string PlaceBowlKey;
+    [SerializeField] Color FullBowlColor;
     public void Init(CookingScreen cs)
     {
         this.cs = cs;
@@ -48,7 +49,9 @@ public class CookingBioDisplay : MonoBehaviour
     {
         ClearIngredients();
 
-        FinishedSoup bowl = new(cookedIngredients, cs.BowlCookingSlot.soupBaseReference);
+        int uses = PlayerInventory.Singleton.data.spice > cs.BowlCookingSlot.soupBaseReference.maxSpiceUses ?
+            cs.BowlCookingSlot.soupBaseReference.maxSpiceUses : PlayerInventory.Singleton.data.spice;
+        FinishedSoup bowl = new(cookedIngredients, cs.BowlCookingSlot.soupBaseReference, uses);
         int iconUsed = 0;
         foreach (var buff in bowl.soupBuffStats.Values)
         {
@@ -64,8 +67,9 @@ public class CookingBioDisplay : MonoBehaviour
         Color cooldownColor = bowl.cooldown < bowl.soupBase.cooldown ? BioDatabase.Singleton.BuffFlavorIcons[FlavorIngredient.BuffFlavor.BuffType.SWEET_Speed].COLOR : Color.white;
         CooldownStat.SetStat(bowl.cooldown, cooldownColor);
         
-        UsesStat.SetStat(bowl.uses, Color.white);
-        int places = 1;
+        UsesStat.SetStat(bowl.uses, bowl.uses == cs.BowlCookingSlot.soupBaseReference.maxSpiceUses ? FullBowlColor : Color.white, 
+            true, cs.BowlCookingSlot.soupBaseReference.maxSpiceUses);
+        int places = 4;
         int d = bowl.uses;
         while (d > 9) { d %= 10; places++; }
         UsesStat.SetColliderSize(places);

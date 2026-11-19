@@ -22,7 +22,6 @@ public class IngredientSlotPreviewTooltip : MonoBehaviour, ITooltipSource
 
     public void SetupTooltip(Vector3 p1, Vector3 p2, int amount)
     {
-        Debug.Log(gameObject.name + " " + amount);
         gameObject.SetActive(true);
         transform.position = (p1 + p2) / 2;
         boxCollider2D.size = amount == 1 ? new Vector2(Mathf.Abs(p2.x - p1.x) * BoxColliderMultiplier_1.x, Mathf.Abs(p2.y - p1.y) * BoxColliderMultiplier_1.y) :

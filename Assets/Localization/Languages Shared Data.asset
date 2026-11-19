@@ -817,6 +817,10 @@ MonoBehaviour:
     m_Key: Save & Quit
     m_Metadata:
       m_Items: []
+  - m_Id: 225960012978548736
+    m_Key: Spice Counter
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

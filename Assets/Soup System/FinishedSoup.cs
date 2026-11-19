@@ -175,7 +175,7 @@ public class FinishedSoup : ISoupBowl
     }
 
     // Makes a Finished Soup
-    public FinishedSoup(List<Ingredient> ingredients, SoupBase stock)
+    public FinishedSoup(List<Ingredient> ingredients, SoupBase stock, int currSpice)
     {
 
         ingredientList = new(ingredients);
@@ -196,7 +196,7 @@ public class FinishedSoup : ISoupBowl
         inflictionFlavors.AddRange(stock.inherentInflictionFlavors); // add inherent inflictions from soup base
 
         // Initialize uses and cooldown
-        uses = 0;
+        uses = currSpice;
         cooldown = stock.cooldown;
 
         // Populate abilities and calculate total uses
@@ -208,7 +208,6 @@ public class FinishedSoup : ISoupBowl
                 soupAbilities.Add(ingredient.abilityType, new(ingredient));
             }
             else soupAbilities[ingredient.abilityType].AddDuplicate(ingredient);
-            uses += ingredient.uses;
         }
         // Track inflictions and buffs using dictionaries
         soupInflictionStats = new();

@@ -175,6 +175,7 @@ public class CookingScreen : MonoBehaviour
                 SoupIsValid = true;
             }
         }
+        if (PlayerInventory.Singleton.data.spice == 0) SoupIsValid = false;
         cookingBioDisplay.DisplayIngredients(cookedIngredients);
         cookedIngredients.Clear();
     }
@@ -232,8 +233,11 @@ public class CookingScreen : MonoBehaviour
             }
             slot.OnCook();
         }
-
-        FinishedSoup soup = new(cookedIngredients, BowlCookingSlot.soupBaseReference);
+        int uses = PlayerInventory.Singleton.data.spice > BowlCookingSlot.soupBaseReference.maxSpiceUses ?
+            BowlCookingSlot.soupBaseReference.maxSpiceUses : PlayerInventory.Singleton.data.spice;
+        PlayerInventory.Singleton.data.spice -= uses;
+        BasketUI.Singleton.SetSpiceCount(PlayerInventory.Singleton.data.spice);
+        FinishedSoup soup = new(cookedIngredients, BowlCookingSlot.soupBaseReference, uses);
         PlayerInventory.Singleton.BowlIsCooked(BowlCookingSlot.soupSlotReference, soup);
         CookSoup?.Invoke();
         MetricsTracker.Singleton.RecordSoupsCooked();

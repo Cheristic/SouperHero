@@ -21,6 +21,7 @@ MonoBehaviour:
   maxFlavorIngredients: 1
   maxAbilityIngredients: 1
   maxWildcardIngredients: 3
+  maxSpiceUses: 25
   inherentInflictionFlavors:
   - inflictionType: 2
     amount: 2

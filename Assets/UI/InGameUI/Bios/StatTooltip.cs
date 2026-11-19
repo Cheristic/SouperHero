@@ -32,11 +32,13 @@ public class StatTooltip : MonoBehaviour, ITooltipSource
         boxCollider2D.size = new Vector2(amount, boxCollider2D.size.y);
     }
 
-    public void SetStat(float amount, Color col)
+    public void SetStat(float amount, Color col, bool percentage = false, int maxCapacity = -1)
     {
         timeProgressed = 0;
         Tooltip.gameObject.SetActive(false);
-        StatText.text = amount.ToString(AmountStringDisplay) + StatSuffix;
+        StatText.text = amount.ToString(AmountStringDisplay);
+        if (percentage) StatText.text += "/" + maxCapacity;
+        StatText.text += StatSuffix;
         StatText.color = col;
     }
 
