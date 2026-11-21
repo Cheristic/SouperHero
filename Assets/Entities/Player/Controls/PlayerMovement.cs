@@ -88,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isDashing || !GameManager.Singleton.GameRunning) return;
+        if (isDashing || !GameManager.Singleton.GameRunning || PauseManager.isPaused) return;
         if (DialogueManager.Singleton != null)
             if (DialogueManager.Singleton.IsDialogueActive()) return;
 

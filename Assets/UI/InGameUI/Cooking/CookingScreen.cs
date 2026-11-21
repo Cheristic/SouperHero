@@ -68,7 +68,7 @@ public class CookingScreen : MonoBehaviour
         CurrentCampfire = source;
         isCooking = true;
         CookingContent.gameObject.SetActive(true);
-        PlayerEntityManager.Singleton.input.Player.PauseGame.started += ExitCooking;
+        PlayerKeybinds.Singleton.pause.action.started += ExitCooking;
 
         EnterCookingScreen?.Invoke();
         foreach (var slot in IngredientCookingSlots) slot.EnterCookingScreen();
@@ -80,7 +80,7 @@ public class CookingScreen : MonoBehaviour
 
     private void OnDisable()
     {
-        PlayerEntityManager.Singleton.input.Player.PauseGame.started -= ExitCooking;
+        PlayerKeybinds.Singleton.pause.action.started -= ExitCooking;
     }
 
     float moveCookingAnimTimeProgressed = 0;
@@ -121,7 +121,7 @@ public class CookingScreen : MonoBehaviour
         CurrentCampfire = null;
         isCooking = false;
 
-        PlayerEntityManager.Singleton.input.Player.PauseGame.started -= ExitCooking;
+        PlayerKeybinds.Singleton.pause.action.started -= ExitCooking;
 
         // Save game after cooking
         RunStateManager.Singleton.SaveRunState();

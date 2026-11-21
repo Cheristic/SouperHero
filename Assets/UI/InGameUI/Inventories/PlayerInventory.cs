@@ -364,23 +364,23 @@ public class PlayerInventory : MonoBehaviour
     void DrinkSoup(InputAction.CallbackContext ctx)
     {
         return; // we're not using this feature
-        if (CookingScreen.Singleton.IsCooking) return;
+        //if (CookingScreen.Singleton.IsCooking) return;
 
-        // Index into current spoon
-        ISoupBowl bowl = soupsHeld[selectedEquippedSoup];
+        //// Index into current spoon
+        //ISoupBowl bowl = soupsHeld[selectedEquippedSoup];
 
-        if (bowl is FinishedSoup finishedSoup)
-        {
-            if (finishedSoup.GetUses() < 5) return;
-            finishedSoup.DrinkSoup();
-            if (finishedSoup.uses <= 0)
-            {
-                BowlIsEmptied(selectedEquippedSoup);
-                FindNextUsableSoup();
-            }
-        }
+        //if (bowl is FinishedSoup finishedSoup)
+        //{
+        //    if (finishedSoup.GetUses() < 5) return;
+        //    finishedSoup.DrinkSoup();
+        //    if (finishedSoup.uses <= 0)
+        //    {
+        //        BowlIsEmptied(selectedEquippedSoup);
+        //        FindNextUsableSoup();
+        //    }
+        //}
 
-        UsedSoupAttack?.Invoke();
+        //UsedSoupAttack?.Invoke();
     }
 
     public void Inventory(InputAction.CallbackContext ctx)
