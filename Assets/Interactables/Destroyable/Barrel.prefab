@@ -189,6 +189,8 @@ MonoBehaviour:
   groundOffsetY: 0.2
   spiceSource: {fileID: 4877344108264060778, guid: 1edef7a398af74a46b83771dcbb6fabf, type: 3}
   spiceToDrop: {x: 1, y: 5}
+  heartPickup: {fileID: 2126549939686818322, guid: 9713f6e0de35c464fae4ab2d40f385e0, type: 3}
+  oddsForHeartDrop: 0.05
 --- !u!50 &2217634043715287802
 Rigidbody2D:
   serializedVersion: 4

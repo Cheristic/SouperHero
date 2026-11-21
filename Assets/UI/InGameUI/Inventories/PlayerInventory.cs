@@ -363,6 +363,7 @@ public class PlayerInventory : MonoBehaviour
 
     void DrinkSoup(InputAction.CallbackContext ctx)
     {
+        return; // we're not using this feature
         if (CookingScreen.Singleton.IsCooking) return;
 
         // Index into current spoon

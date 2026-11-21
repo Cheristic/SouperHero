@@ -193,7 +193,7 @@ public class RatishAI : EnemyBaseClass
         animator.Play("Attack");
         StandardEnemyBullet bulletInstance = Instantiate(bullet, firingPoint.position, firingPoint.rotation);
         Vector2 playerDirection = PlayerEntityManager.Singleton.currentPlayerLocation.position - transform.position;
-        bulletInstance.SetDirection(playerDirection);
+        bulletInstance.SetDirection(playerDirection, gameObject);
     }
 
     public void Start()

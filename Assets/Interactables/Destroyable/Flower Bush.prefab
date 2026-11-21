@@ -5032,6 +5032,8 @@ MonoBehaviour:
   groundOffsetY: 0.1
   spiceSource: {fileID: 0}
   spiceToDrop: {x: 0, y: 1}
+  heartPickup: {fileID: 2126549939686818322, guid: 9713f6e0de35c464fae4ab2d40f385e0, type: 3}
+  oddsForHeartDrop: 0.1
 --- !u!58 &4576899831574263389
 CircleCollider2D:
   m_ObjectHideFlags: 0

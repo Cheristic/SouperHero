@@ -18,6 +18,8 @@ public class Destroyables : MonoBehaviour
     [SerializeField] float groundOffsetY = 0;
     [SerializeField] SpiceSource spiceSource;
     [SerializeField] Vector2Int spiceToDrop;
+    [SerializeField] HeartPickup heartPickup;
+    [SerializeField] float oddsForHeartDrop = -1;
 
     int forageableIndex = -1;
     public void TrackSpawn(int index, List<Collectable> newList)
@@ -26,7 +28,7 @@ public class Destroyables : MonoBehaviour
         if (randDrop) multipleCollectables = newList;
     }
 
-    public void RemoveDestroyable(Vector2 hitDir = default)
+    public virtual void RemoveDestroyable(GameObject _source, Vector2 hitDir = default)
     {
         if (!DestroyedOnDamage) return;
 
@@ -65,8 +67,15 @@ public class Destroyables : MonoBehaviour
         if (spiceSource != null)
         {
             float angle = Mathf.Rad2Deg * Mathf.Atan2(hitDir.y, hitDir.x);
-            SpiceSource source = Instantiate(spiceSource, transform.position, Quaternion.identity);
-            source.Emit(UnityEngine.Random.Range(spiceToDrop.x, spiceToDrop.y), angle);
+            SpiceSource _spiceSource = Instantiate(spiceSource, transform.position, Quaternion.identity);
+            _spiceSource.Emit(UnityEngine.Random.Range(spiceToDrop.x, spiceToDrop.y), angle);
+        }
+
+        float odds = UnityEngine.Random.Range(0, 1f);
+        if (odds < oddsForHeartDrop)
+        {
+            HeartPickup h = Instantiate(heartPickup, transform.position, Quaternion.identity);
+            h.Spawn(hitDir.normalized);
         }
        
 

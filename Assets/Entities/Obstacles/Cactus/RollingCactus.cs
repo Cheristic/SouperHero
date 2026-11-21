@@ -127,7 +127,7 @@ public class RollingCactus : Entity
                 destroyableEntity?.ApplyInfliction(inflictionsOnRollContact, gameObject.transform);
             } else
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(direction);
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(gameObject, direction);
             }
 
             hasContacted = true;

@@ -162,7 +162,7 @@ public class Throwable : Interactable
             }
             else
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(onThrowDir);
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(PlayerEntityManager.Singleton.gameObject, onThrowDir);
             }
 
             hasContacted = true;
@@ -173,7 +173,7 @@ public class Throwable : Interactable
     public virtual void OnThrowContact()
     {
         TryGetComponent(out Destroyables destroyable);
-        destroyable?.RemoveDestroyable(onThrowDir);
+        destroyable?.RemoveDestroyable(PlayerEntityManager.Singleton.gameObject, onThrowDir);
     }
 
 

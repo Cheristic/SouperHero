@@ -35,8 +35,10 @@ public class StandardEnemyBullet : MonoBehaviour
         }
     }
 
-    public void SetDirection(Vector2 d)
+    GameObject source;
+    public void SetDirection(Vector2 d, GameObject _source)
     {
+        source = _source;
         if (rb == null)
         {
             rb = GetComponent<Rigidbody2D>();
@@ -56,7 +58,7 @@ public class StandardEnemyBullet : MonoBehaviour
         {
             if (collider.gameObject.GetComponent<Destroyables>() != null)
             {
-                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(direction);
+                collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(source, direction);
             }
             if(collider.gameObject.GetComponent<Entity>() != null)
             {

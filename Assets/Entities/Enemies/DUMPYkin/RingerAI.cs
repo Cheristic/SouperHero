@@ -197,7 +197,7 @@ public class RingerAI : EnemyBaseClass
                 for(float i = 0; i <= 360; i += angle)
                 {
                     StandardEnemyBullet bullet = Instantiate(ringer.bullet, ringer.firingPoint.position, Quaternion.Euler(0, 0, i));
-                    bullet.SetDirection(new Vector2(Mathf.Cos(i * Mathf.Deg2Rad), Mathf.Sin(i * Mathf.Deg2Rad)));
+                    bullet.SetDirection(new Vector2(Mathf.Cos(i * Mathf.Deg2Rad), Mathf.Sin(i * Mathf.Deg2Rad)), ringer.gameObject);
                 }
             }
             else if (time >= 1)

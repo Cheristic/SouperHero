@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] ParticleSystem dashDustVer;
     [SerializeField] Vector2 dustOffsetVer;
 
+    [SerializeField] HeartPickup hrt;
     // Start is called before the first frame update
     void Awake()
     {

@@ -67,7 +67,7 @@ public class MeleeAbility : AbilityAbstractClass
             if (destroyableObject != null)
             {
                 // Remove the destroyable object
-                destroyableObject.RemoveDestroyable(playerDir);
+                destroyableObject.RemoveDestroyable(PlayerEntityManager.Singleton.gameObject, playerDir);
                 continue;
             }
 

@@ -62,7 +62,7 @@ public class ProjectileObject : MonoBehaviour
         }
         else if (CollisionLayers.Singleton.InDestroyableLayer(collider.gameObject))
         {
-            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(currDir);
+            collider.gameObject.GetComponent<Destroyables>().RemoveDestroyable(PlayerEntityManager.Singleton.gameObject, currDir);
             canHitPlayer = false;
             gameObject.SetActive(false);
         } else if (collider.CompareTag("NPC"))
